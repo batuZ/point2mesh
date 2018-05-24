@@ -1,0 +1,91 @@
+public class SplitGeometry
+    {
+        List<Geometry> geoArrStrai = new List<Geometry>();
+        List<Geometry> geoArrunStrai = new List<Geometry>();
+        Geometry straiGeo = new Geometry(wkbGeometryType.wkbLineString);
+        Geometry unStraiGeo = new Geometry(wkbGeometryType.wkbLineString);
+        Geometry _myGeo;
+
+        public SplitGeometry(Geometry geo)
+        {
+            _myGeo = geo;
+        }
+
+        public void SplitByAngle(double standard)
+        {
+            double ax,ay,bx,by,cx,cy,angle;
+            bool flag = false;//表明当前点集为unStrai点集
+            unStraiGeo.AddPoint(_myGeo.GetX(0), _myGeo.GetY(0), 0);
+
+            for (int i = 1; i < _myGeo.GetPointCount() - 1; i++)
+            {
+                ax = _myGeo.GetX(i - 1);
+                ay = _myGeo.GetY(i - 1);
+                bx = _myGeo.GetX(i);
+                by = _myGeo.GetY(i);
+                cx = _myGeo.GetX(i + 1);
+                cy = _myGeo.GetY(i + 1);
+
+                angle = GetAngle(ax, ay, bx, by, cx, cy);
+
+                if (angle > standard && flag)
+                {
+                    straiGeo.AddPoint(bx,by,0);
+                }
+                else if (angle > standard && !flag)
+                {
+                    straiGeo.AddPoint(bx, by, 0);
+                    geoArrunStrai.Add(unStraiGeo);
+                    unStraiGeo.Empty();
+                    flag = true;
+                }
+                else if (angle <= standard && !flag)
+                {
+                    unStraiGeo.AddPoint(bx, by, 0);
+                }
+                else if (angle <= standard && flag)
+                {
+                    unStraiGeo.AddPoint(bx, by, 0);
+                    geoArrStrai.Add(straiGeo);
+                    straiGeo.Empty();
+                    flag = false;
+                }
+            }
+
+            if (!straiGeo.IsEmpty())
+            {
+                geoArrStrai.Add(straiGeo);
+            }
+            if (!unStraiGeo.IsEmpty())
+            {
+                geoArrunStrai.Add(unStraiGeo);
+            }
+        }
+
+        public List<Geometry> GetStrai()
+        {
+            return geoArrStrai;
+        }
+
+        public List<Geometry> GetUnStrai()
+        {
+            return geoArrunStrai;
+        }
+
+        //获得a,b,c三点的夹角
+        private double GetAngle(double ax,double ay,double bx,double by,double cx,double cy)
+        {
+            double vecBA_x = ax - bx;
+            double vecBA_y = ay - by;
+
+            double vecBC_x = cx - bx;
+            double vecBC_y = cy - by;
+
+            double diancheng = vecBA_x * vecBC_x + vecBA_y * vecBC_y;
+            double mo = Math.Sqrt(vecBA_x * vecBA_x + vecBA_y * vecBA_y) * Math.Sqrt(vecBC_x*vecBC_x+vecBC_y*vecBC_y);
+
+            double angle = 180 * Math.Acos(diancheng / mo) / Math.PI;
+
+            return angle;
+        }
+    }

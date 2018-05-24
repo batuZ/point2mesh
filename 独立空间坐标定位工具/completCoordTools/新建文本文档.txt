@@ -1,0 +1,213 @@
+
+////////////////////////////////// 公式 ///////////////////////////////////
+class getCoors
+{
+    /// <summary>
+    /// 坐标系：以A为原点的左手坐标系  主函数
+    /// </summary>
+    /// <param name="MA"></param>
+    /// <param name="MB"></param>
+    /// <param name="MC"></param>
+    /// <param name="AB"></param>
+    /// <param name="BC"></param>
+    /// <param name="AC"></param>
+    /// <returns></returns>
+    public static Tuple<double, double, double> Cal2(double MA, double MB, double MC, double AB, double BC, double AC)
+    {
+        double CosMAS = GetCos(MA, MB, AB);
+        double CosMAC = GetCos(MA, MC, AC);
+        double CosCAB = GetCos(AB, BC, AC);
+        //double CosMAS = Math.Cos(120.0 / 180 * Math.PI), CosMAC = Math.Cos(120.0 / 180 * Math.PI), CosCAB = Math.Cos(60.0 / 180 * Math.PI);
+
+        double TanW = (CosMAC / CosMAS - CosCAB) / (Math.Sin(Math.Acos(CosCAB)));
+
+        double AO = MA * CosMAS / (Math.Cos(Math.Atan(TanW)));
+
+        //以下求MA在Y轴上的投影
+        double X = AO * (Math.Cos(Math.Atan(TanW)));
+        double Y = AO * (Math.Sin(Math.Atan(TanW)));
+        double Z = Math.Sqrt(MA * MA - AO * AO);
+
+        Tuple<double, double, double> Coord = Tuple.Create<double, double, double>(X, Y, Z);
+
+        return Coord;
+    }
+
+    /// <summary>
+    ///  子函数
+    /// </summary>
+    /// <param name="LengthA"></param>
+    /// <param name="LengthO">角O所对边边长</param>
+    /// <param name="LengthB"></param>
+    /// <returns>返回角O的余弦值</returns>
+    private static double GetCos(double LengthA, double LengthO, double LengthB)
+    {
+        return (LengthA * LengthA + LengthB * LengthB - LengthO * LengthO) /
+            (2 * LengthA * LengthB);
+    }
+// 验证输入
+    public static bool IsNumber(string input)
+    {
+        string pattern = "^-?\\d+$|^(-?\\d+)(\\.\\d+)?$";
+        Regex regex = new Regex(pattern);
+        return regex.IsMatch(input);
+    }
+}
+
+////////////////////////////////// 界面  ////////////////////////////////
+namespace 独立空间坐标定位工具
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (button1.Text == "定义")
+            {
+                bool a = getCoors.IsNumber(textBox1.Text);
+                bool b = getCoors.IsNumber(textBox2.Text);
+                bool c = getCoors.IsNumber(textBox3.Text);
+                if (a && b && c)
+                {
+                    ///1 黑掉输入框
+                    textBox1.Enabled = false;
+                    textBox2.Enabled = false;
+                    textBox3.Enabled = false;
+                    ///2 改BUTTON 字
+                    button1.Text = "修改";
+                    ///3 亮点距输入框及BUT
+                    textBox4.Enabled = true;
+                    textBox5.Enabled = true;
+                    textBox6.Enabled = true;
+                    textPointName.Enabled = true;
+                    button2.Enabled = true;
+
+                }
+                else
+                { MessageBox.Show("输入错误！"); return; }
+            }
+            else if (button1.Text == "修改")
+            {
+                ///1 改BUT 字为定义
+                button1.Text = "定义";
+                ///2 亮输入框  并清空
+                textBox1.Enabled = true;
+                textBox2.Enabled = true;
+                textBox3.Enabled = true;
+                textBox1.Text = "";
+                textBox2.Text = "";
+                textBox3.Text = "";
+                ///3 黑点距框
+                textBox4.Enabled = false;
+                textBox5.Enabled = false;
+                textBox6.Enabled = false;
+                textPointName.Enabled = false;
+                textBox4.Text = "";
+                textBox5.Text = "";
+                textBox6.Text = "";
+                textPointName.Text = "";
+                xValue.Text = "";
+                yValue.Text = "";
+                zValue.Text = "";
+                button2.Enabled = false;
+                ///4黑记录框
+                button3.Enabled = false;
+            }
+            else return;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.ShowDialog();
+        }
+
+        private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            button4.Text = saveFileDialog1.FileName;
+            if (File.Exists(saveFileDialog1.FileName))
+            {
+                File.Delete(saveFileDialog1.FileName);
+            }
+            if (button4.Text != "指定输出位置")
+            {
+                textBox1.Enabled = true;
+                textBox2.Enabled = true;
+                textBox3.Enabled = true;
+                button1.Enabled = true;
+                textBox1.Text = "";
+                textBox2.Text = "";
+                textBox3.Text = "";
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string number = "【" + textPointName.Text + "】：" + xValue.Text + "," + yValue.Text + "," + zValue.Text;
+            using (System.IO.StreamWriter coor = new System.IO.StreamWriter(button4.Text, true))
+            {
+                coor.WriteLine(number);// 直接追加文件末尾，换行   
+            }
+            textBox4.Text = "";
+            textBox5.Text = "";
+            textBox6.Text = "";
+            xValue.Text = "xValue √";
+            yValue.Text = "xValue √";
+            zValue.Text = "zValue √";
+            button3.Enabled = false;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            bool a = getCoors.IsNumber(textBox4.Text);
+            bool b = getCoors.IsNumber(textBox5.Text);
+            bool c = getCoors.IsNumber(textBox6.Text);
+            if (a && b && c)
+            {
+                double OX = Convert.ToDouble(textBox1.Text);
+                double OY = Convert.ToDouble(textBox2.Text);
+                double XY = Convert.ToDouble(textBox3.Text);
+                double PO = Convert.ToDouble(textBox4.Text);
+                double PX = Convert.ToDouble(textBox5.Text);
+                double PY = Convert.ToDouble(textBox6.Text);
+                var res = getCoors.Cal2(PO, PX, PY, OX, XY, OY);
+                xValue.Text = Math.Round(res.Item1, 3).ToString();
+                yValue.Text = Math.Round(res.Item2, 3).ToString();
+                zValue.Text = Math.Round(res.Item3, 3).ToString();
+            }
+            else
+            { MessageBox.Show("输入错误！"); return; }
+
+            button3.Enabled = true;
+        }
+        
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (getCoors.IsNumber(textBox1.Text) && getCoors.IsNumber(textBox2.Text))
+            {
+                textBox3.Text = Math.Round(Math.Sqrt(
+                   Convert.ToDouble(textBox1.Text)
+                   * Convert.ToDouble(textBox1.Text)
+                   + Convert.ToDouble(textBox2.Text)
+                   * Convert.ToDouble(textBox2.Text)), 3
+                   ).ToString();
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (getCoors.IsNumber(textBox1.Text) && getCoors.IsNumber(textBox2.Text))
+            {
+                textBox3.Text =Math.Round( Math.Sqrt(
+                    Convert.ToDouble(textBox1.Text)
+                    * Convert.ToDouble(textBox1.Text)
+                    + Convert.ToDouble(textBox2.Text)
+                    * Convert.ToDouble(textBox2.Text)),3
+                    ).ToString();
+            }
+        }
+    }
+}
