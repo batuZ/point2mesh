@@ -12,15 +12,15 @@ namespace 网格修复工具
 {
     public partial class Form1 : Form
     {
+        //实例化一个点列表对象
+        PointList points = new PointList();
+
+        //定义一个三角形列表对象，并将三角形列表对象初始化为null，作为后续条件
+        TriangleList triangles = null;
         public Form1()
         {
             InitializeComponent();
         }
-
-        //实例化一个点列表对象
-        PointList points = new PointList();
-        //定义一个三角形列表对象，并将三角形列表对象初始化为null，作为后续条件
-        TriangleList triangles = null;
 
         //点击左键
         private void panel_MouseDown(object sender, MouseEventArgs e)
@@ -34,11 +34,11 @@ namespace 网格修复工具
             Pen pointPen = new Pen(Color.Red, 2);
 
             //实例化点对象
-            Point newPoint = new Point(e.X, e.Y );
+            Point newPoint = new Point(e.X, e.Y);
             //将点对象加入点列表中
             points.pointList.Add(newPoint);
-         
-           
+
+
 
             //当点数大于三时，实例化对象并调构造函数，存入点，创建三角形
             if (points.pointList.Count > 2)
@@ -72,18 +72,10 @@ namespace 网格修复工具
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string txtFile = @"D:\TEMPFORGETDATATOOLS\1.txt";
-            string demFile = @"D:\work\C-长春\压力测试2\长春\changchun_dsm05.img";
-            string domFile = @"D:\work\C-长春\压力测试2\长春\dom_all_01.img";
-            string mapFile = @"D:\TEMPFORGETDATATOOLS\11.tif";
-            double yuzhi = 3;
-            GetPointGroup afeat = new GetPointGroup(txtFile, demFile, yuzhi, domFile, mapFile);
-            points.pointList.AddRange(afeat.mapP);
-            Construction_TIN delaunay = new Construction_TIN(this.points);
-            triangles = delaunay.Triangle_const(); 
-
+            points = new PointList();
+            triangles = null;
+            this.panel.BackgroundImage = null;
         }
-
     }
 }
 
