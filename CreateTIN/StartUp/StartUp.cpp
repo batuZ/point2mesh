@@ -5,10 +5,10 @@
 #include "Triangle.h"
 #include "Edge.h"
 #include "Point.h"
-#include <vector>
 
 int main()
 {
+	
     return 0;
 }
 
