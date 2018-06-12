@@ -12,5 +12,5 @@
 #include <vector>
 #include<iostream>
 using namespace std;
-
+#include <math.h>
 // TODO:  在此处引用程序需要的其他头文件
