@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Edge.h"
-#include"Point.h"
 
 Edge::Edge(Point * start, Point * end) :Start(start), End(end)
 {
@@ -9,6 +8,8 @@ Edge::Edge(Point * start, Point * end) :Start(start), End(end)
 Edge::~Edge()
 {
 }
+
+vector<Edge*> Edge::edgeList;
 
 bool Edge::isSame(Edge * other)
 {

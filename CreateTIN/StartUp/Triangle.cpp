@@ -17,6 +17,8 @@ Triangle::~Triangle()
 {
 }
 
+vector<Triangle*> Triangle::triangleList;
+
 void Triangle::GetCenterPro()
 {
 	double x1, y1, x2, y2, x3, y3;
@@ -36,19 +38,19 @@ bool Triangle::IsInCirclecircle(Point * point)
 	return pow(point->X - *m_centerX, 2) + pow(point->Y - *m_centerY, 2) <= *m_Radius;
 }
 
-void Triangle::SuperTriangle()
+void Triangle::SuperTriangle(vector<Point*> points)
 {
-	double minx = Point::pointList[0]->X;
-	double miny = Point::pointList[0]->Y;
+	double minx = points[0]->X;
+	double miny = points[0]->Y;
 	double maxx = minx;
 	double maxy = miny;
 
-	for (size_t i = 0; i < Point::pointList.size; i++)
+	for (auto var : points)
 	{
-		minx = Point::pointList[i]->X < minx ? Point::pointList[i]->X : minx;
-		miny = Point::pointList[i]->Y < miny ? Point::pointList[i]->Y : miny;
-		maxx = Point::pointList[i]->X > maxx ? Point::pointList[i]->X : maxx;
-		maxy = Point::pointList[i]->Y > maxy ? Point::pointList[i]->Y : maxy;
+		minx = var->X < minx ? var->X : minx;
+		miny = var->Y < miny ? var->Y : miny;
+		maxx = var->X > maxx ? var->X : maxx;
+		maxy = var->Y > maxy ? var->Y : maxy;
 	}
 	double d = (maxx - minx > maxy - miny) ? maxx - minx : maxy - miny;
 	double xmid = (minx + maxx) * 0.5;
@@ -57,5 +59,14 @@ void Triangle::SuperTriangle()
 	Point* stpB = new Point(xmid + 2 * d, ymid - d, 0, -2);
 	Point* stpC = new Point(xmid - 2 * d, ymid - d, 0, -3);
 
-	Triangle::triangleList.push_back(new Triangle(stpA,stpB,stpC));
+	triangleList.push_back(new Triangle(stpA, stpB, stpC));
+}
+
+void Triangle::RemoveSupers()
+{
+	for (auto it = triangleList.begin(); it != triangleList.end();)
+		if ((*it)->A->ID < 0 || (*it)->B->ID < 0 || (*it)->C->ID < 0)
+			triangleList.erase(it);
+		else
+			it++;
 }

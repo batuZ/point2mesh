@@ -8,7 +8,17 @@
 
 int main()
 {
-	
-    return 0;
+	Triangle::SuperTriangle(Point::pointList);
+	for (size_t i = 0; i < Point::pointList.size() - 3; i++)
+	{
+		vector<Edge*> tEdges;
+		vector<Triangle*>::iterator it = Triangle::triangleList.begin();
+		for (; it != Triangle::triangleList.end();it++)
+		{
+			
+			Triangle::triangleList.erase(it);
+		}
+	}
+	return 0;
 }
 

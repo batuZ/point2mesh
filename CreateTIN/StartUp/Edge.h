@@ -1,5 +1,6 @@
 #pragma once
 #include"Point.h"
+
 class Edge
 {
 public:

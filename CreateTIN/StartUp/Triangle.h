@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "Edge.h"
 #include "Point.h"
 class Triangle
@@ -16,8 +15,9 @@ public:
 	Edge *E1, *E2, *E3;
 
 	bool IsInCirclecircle(Point* point);
-	static vector<Triangle*>triangleList;
 
-	static void SuperTriangle();
+	static vector<Triangle*>triangleList;
+	static void SuperTriangle(vector<Point*> points);
+	static void RemoveSupers();
 };
 
